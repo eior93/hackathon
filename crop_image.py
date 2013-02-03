@@ -193,7 +193,7 @@ def crop_image(image_name):
 
         cv2.imwrite(image_name+'_cropped.jpg', cropped_im)
 
-#crop_image('picture0')
+crop_image('picture1')
         #image_names = ['IMAG1024', 'IMAG1025', 'IMAG1026', 'IMAG1027', 'IMAG1028', 'IMAG1029', 'IMAG1030']
         #for im in image_names:
         #    crop_image(im)
