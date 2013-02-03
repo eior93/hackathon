@@ -46,11 +46,11 @@ def avg_img_color(img_in):
 	sum_g = 0
 	sum_b = 0
 	img_mat = cv.GetMat(img_in)
-	for r in range(0, img_mat.rows-1):
-		for c in range(0, img_mat.cols-1):
-			 sum_r += img_mat[r, c][0]
+	for r in range(0, img_mat.rows):
+		for c in range(0, img_mat.cols):
+			 sum_r += img_mat[r, c][2]
 			 sum_g += img_mat[r, c][1]
-			 sum_b += img_mat[r, c][2]
+			 sum_b += img_mat[r, c][0]
 	
 	num_pix = img_in.width * img_in.height
 	avg_r = sum_r / num_pix
@@ -59,7 +59,23 @@ def avg_img_color(img_in):
 
 	return (avg_r, avg_g, avg_b)
 
+# Get average color sample values for knowing RGB values for colors
+color_sample_filenames = [["color_samples/red.jpg"],
+	["color_samples/orange.jpg", "color_samples/orange1.jpg"]]
 
-image_red = cv.LoadImage("red.jpg")
-min_dist_index = min_distance_index(avg_img_color(image_red))
-print color_names[min_dist_index]
+for color_i in range(0, len(color_sample_filenames)):
+	this_sample_filenames = color_sample_filenames[color_i]
+	num_samples = len(this_sample_filenames)
+	color_tuples = []
+	for sample_i in range(0, num_samples):
+		color_tuples.append(
+				avg_img_color(cv.LoadImage(this_sample_filenames[sample_i])))
+	avg_r = sum([color[0] for color	in color_tuples]) / num_samples
+	avg_g = sum([color[1] for color	in color_tuples]) / num_samples
+	avg_b = sum([color[2] for color	in color_tuples]) / num_samples
+	colors[color_i] = (avg_r, avg_g, avg_b)
+
+
+# image_red = cv.LoadImage("red.jpg")
+# min_dist_index = min_distance_index(avg_img_color(image_red))
+# print color_names[min_dist_index]
