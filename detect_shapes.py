@@ -1,5 +1,8 @@
 import numpy as np
 import cv2
+import Image, cv
+
+
 
 
 def x_var_filter(l):
@@ -15,6 +18,7 @@ f = 'test_res/resr6.jpg'
 
 # Read in image
 img = cv2.imread(f)
+
 
 # Sharpen the image (unsharpen mask)
 blur = cv2.blur(img, (7,1))
