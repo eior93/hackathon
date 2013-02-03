@@ -1,26 +1,12 @@
 #!/usr/bin/env python2.7
 
+from colors import color_names, colors
 import cv
 import math
 import os
 import fnmatch
 import numpy as np
 
-BLACK = (10, 10, 10);
-BROWN = (88, 60, 50);
-RED = (231, 47, 39);
-ORANGE = (238, 113, 25);
-YELLOW = (255, 228, 15);
-GREEN = (23, 106, 43);
-BLUE = (46, 20, 141);
-PURPLE = (115, 71, 79);
-GREY = (0, 0, 0); # TODO add color values here
-WHITE = (244, 244, 244);
-
-colors = [BLACK, BROWN, RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, GREY, WHITE];
-
-color_names = ["black", "brown", "red", "orange", "yellow", "green", "blue", "purple", 
-	"grey", "white"];
 
 # Distance formula between two colors
 def distance(a, b):
@@ -31,8 +17,6 @@ def min_distance_index(color_in):
 	distances = [];
 	for i in range(0, len(colors)-1):
 		distances.append(distance(color_in, colors[i]))
-	print color_in
-	print distances
 	return min_index(distances)
 
 def min_index(arr):
@@ -90,20 +74,6 @@ for color_i in range(0, len(color_names)):
 	colors[color_i] = (avg_r, avg_g, avg_b)
 
 for color_i in range(0, len(color_names)):
-	print color_names[color_i] + ":\t" + str(colors[color_i])
+	print color_names[color_i].upper() + "\t=\t" + str(colors[color_i])
 
-# Check performance
-# Move back to hackathon directory
-# TODO less hacky way to do this
-os.chdir('../test_images')
-
-for color_i in range(0, len(color_names)):
-	this_sample_filenames = fnmatch.filter(os.listdir('.'), color_names[color_i]+'*.jpg');
-	num_samples = len(this_sample_filenames)
-	if num_samples > 0:
-		print "Expected Color: " + color_names[color_i]
-		print "Classified Color: "
-		for sample_i in range(0, num_samples):
-			test_image = cv.LoadImage(this_sample_filenames[sample_i])
-			min_dist_index = min_distance_index(avg_img_color(test_image))
-			print "\t" + color_names[min_dist_index]
+os.chdir("..")
