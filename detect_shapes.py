@@ -113,8 +113,11 @@ def cropped_img_to_colors(f):
 	blur = cv2.blur(img, (7,1))
 	# cv2.addWeighted(img, 1.5, blur, -0.5, 0, blur)
 
+	# cv2.imwrite(f+"_blur.jpg", blur)
+
 	# Convert to grayscale
-	gray = cv2.cvtColor(blur, cv2.COLOR_RGB2GRAY)
+	# gray = cv2.imread(f, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+	# gray = cv2.cvtColor(blur, cv2.COLOR_RGB2GRAY)
 	img_width = len(img[0])
 	img_height = len(img)
 

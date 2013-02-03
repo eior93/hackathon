@@ -5,7 +5,7 @@ from crop_image import crop_image_2, crop_image
 
 def image_to_color_bands(image_name):
 	# crop image
-	crop_image_2(image_name)	
+	crop_image(image_name)	
 	# cropped image name
 	cropped_filename = image_name + "_cropped.jpg"
 	# identify color bands
