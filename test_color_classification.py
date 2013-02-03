@@ -8,7 +8,6 @@ import fnmatch
 
 # Check performance
 # TODO less hacky way to move to correct directory
-print os.listdir(".")
 os.chdir("test_images")
 
 for color_i in range(0, len(color_names)):
