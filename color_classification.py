@@ -4,6 +4,7 @@ import cv
 import math
 import os
 import fnmatch
+import numpy as np
 
 BLACK = (10, 10, 10);
 BROWN = (88, 60, 50);
@@ -30,12 +31,14 @@ def min_distance_index(color_in):
 	distances = [];
 	for i in range(0, len(colors)-1):
 		distances.append(distance(color_in, colors[i]))
+	print color_in
+	print distances
 	return min_index(distances)
 
 def min_index(arr):
 	index = 0
 	min_val = arr[0]
-	for i in range(1, len(arr)-1):
+	for i in range(1, len(arr)):
 		if arr[i] < min_val:
 			index = i
 			min_val = arr[i]
@@ -45,19 +48,26 @@ def avg_img_color(img_in):
 	sum_r = 0
 	sum_g = 0
 	sum_b = 0
+	r_values = []
+	g_values = []
+	b_values = []
 	img_mat = cv.GetMat(img_in)
 	for r in range(0, img_mat.rows):
 		for c in range(0, img_mat.cols):
 			 sum_r += img_mat[r, c][2]
 			 sum_g += img_mat[r, c][1]
 			 sum_b += img_mat[r, c][0]
+			 r_values.append(img_mat[r, c][2])
+			 g_values.append(img_mat[r, c][1])
+			 b_values.append(img_mat[r, c][0])
 	
 	num_pix = img_in.width * img_in.height
-	avg_r = sum_r / num_pix
-	avg_g = sum_g / num_pix
-	avg_b = sum_b / num_pix
+	# avg_r = sum_r / num_pix
+	# avg_g = sum_g / num_pix
+	# avg_b = sum_b / num_pix
 
-	return (avg_r, avg_g, avg_b)
+	return (np.median(r_values), np.median(g_values), np.median(b_values))
+	# return (avg_r, avg_g, avg_b)
 
 # Prototyping code below =============================================
 
@@ -79,6 +89,21 @@ for color_i in range(0, len(color_names)):
 	avg_b = sum([color[2] for color	in color_tuples]) / num_samples
 	colors[color_i] = (avg_r, avg_g, avg_b)
 
-# image_red = cv.LoadImage("red.jpg")
-# min_dist_index = min_distance_index(avg_img_color(image_red))
-# print color_names[min_dist_index]
+for color_i in range(0, len(color_names)):
+	print color_names[color_i] + ":\t" + str(colors[color_i])
+
+# Check performance
+# Move back to hackathon directory
+# TODO less hacky way to do this
+os.chdir('../test_images')
+
+for color_i in range(0, len(color_names)):
+	this_sample_filenames = fnmatch.filter(os.listdir('.'), color_names[color_i]+'*.jpg');
+	num_samples = len(this_sample_filenames)
+	if num_samples > 0:
+		print "Expected Color: " + color_names[color_i]
+		print "Classified Color: "
+		for sample_i in range(0, num_samples):
+			test_image = cv.LoadImage(this_sample_filenames[sample_i])
+			min_dist_index = min_distance_index(avg_img_color(test_image))
+			print "\t" + color_names[min_dist_index]
