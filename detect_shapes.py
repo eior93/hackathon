@@ -16,7 +16,7 @@ def x_var_filter(l):
 		return True
 
 # sum threshold in y directions to find peaks
-def sum_y_and_thresh(thresh):
+def sum_y_and_thresh(thresh, img_width, img_height):
 	thresh_y = []
 	thresh_y_bin = []
 	for c in range(0, img_width):
@@ -75,7 +75,7 @@ def band_ids_first_pass(x_cuts, img_height, img):
 	return band_ids
 
 # Second pass band ids
-def band_ids_second_pass(band_ids, img_height):
+def band_ids_second_pass(band_ids, img_height, img):
 	x_cuts_2 = []
 	top_row = 0
 	bottom_row = img_height - 1
@@ -104,29 +104,48 @@ def band_ids_second_pass(band_ids, img_height):
 	return band_ids_2
 
 
-f = 'test_res/resr4.jpg'
+def cropped_img_to_colors(f):
+	# Read in image
+	img = cv2.imread(f)
+	# Sharpen the image (unsharpen mask)
+	blur = cv2.blur(img, (7,1))
+	cv2.addWeighted(img, 1.5, blur, -0.5, 0, blur)
 
-# Read in image
-img = cv2.imread(f)
+	# Convert to grayscale
+	gray = cv2.cvtColor(blur, cv2.COLOR_RGB2GRAY)
+	img_width = len(img[0])
+	img_height = len(img)
 
-# Sharpen the image (unsharpen mask)
-blur = cv2.blur(img, (7,1))
-cv2.addWeighted(img, 1.5, blur, -0.5, 0, blur)
+	thresh = cv2.Canny(gray, 30, 75)
+	thresh_y_bin = sum_y_and_thresh(thresh, img_width, img_height)
+	x_cuts = cuts_cross_threshold(thresh_y_bin, img_width)
 
-# Convert to grayscale
-gray = cv2.cvtColor(blur, cv2.COLOR_RGB2GRAY)
+	band_ids = band_ids_first_pass(x_cuts, img_height, img)
+	band_ids_2 = band_ids_second_pass(band_ids, img_height, img)
 
-img_width = len(img[0])
-img_height = len(img)
+	colors = []
+	BGD = 10
+	for i in range(0, len(band_ids_2.keys())):
+		if band_ids_2[i][0] != BGD:
+			colors.append(band_ids_2[i][0])
 
-thresh = cv2.Canny(gray, 30, 75)
-thresh_y_bin = sum_y_and_thresh(thresh)
-x_cuts = cuts_cross_threshold(thresh_y_bin, img_width)
+	# Handle if you don't find the correct number of bands
+	if len(colors) > 3:
+		return colors[0:2]
+	elif len(colors) == 3:
+		return colors
+	elif len(colors) == 2:
+		return colors.append(colors[1])
+	elif len(colors) == 1:
+		return colors.append(colors[0]).append(colors[0])
+	else:
+		return [0, 0, 0]
 
-band_ids = band_ids_first_pass(x_cuts, img_height, img)
+	return colors
 
-band_ids_2 = band_ids_second_pass(band_ids, img_height)
- 
+# f = 'test_res/resr4.jpg'
+# print cropped_img_to_colors(f)
+
 # contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 # 
 # 

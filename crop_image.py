@@ -105,8 +105,6 @@ def crop_image(image_name):
     #print bottom_row
     cropped_im = np.array(cropped_im[top_row:bottom_row])
 
-
-    
     cv2.imwrite(image_name+'_cropped.jpg', cropped_im)
 
 
