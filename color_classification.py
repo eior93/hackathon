@@ -14,7 +14,7 @@ def distance(a, b):
 # Minimum distance between a tuple for a color and color classifications
 def min_distance_index(color_in):
 	distances = [];
-	for i in range(0, len(colors)-1):
+	for i in range(0, len(colors)):
 		distances.append(distance(color_in, colors[i]))
 	return min_index(distances)
 
@@ -26,6 +26,29 @@ def min_index(arr):
 			index = i
 			min_val = arr[i]
 	return index
+
+def avg_img_color_np(img_mat):
+	sum_r = 0
+	sum_g = 0
+	sum_b = 0
+	r_values = []
+	g_values = []
+	b_values = []
+	height = len(img_mat) # height
+	width = len(img_mat[0]) # width
+	for r in range(0, height):
+		for c in range(0, width):
+			 sum_r += img_mat[r, c][2]
+			 sum_g += img_mat[r, c][1]
+			 sum_b += img_mat[r, c][0]
+			 if(img_mat[r, c][2] < 255 
+				 and img_mat[r, c][1] < 255 
+				 and img_mat[r, c][0] < 255):
+				 r_values.append(img_mat[r, c][2])
+				 g_values.append(img_mat[r, c][1])
+				 b_values.append(img_mat[r, c][0])
+	
+	return (np.median(r_values), np.median(g_values), np.median(b_values))
 
 def avg_img_color(img_in):
 	sum_r = 0
@@ -40,9 +63,12 @@ def avg_img_color(img_in):
 			 sum_r += img_mat[r, c][2]
 			 sum_g += img_mat[r, c][1]
 			 sum_b += img_mat[r, c][0]
-			 r_values.append(img_mat[r, c][2])
-			 g_values.append(img_mat[r, c][1])
-			 b_values.append(img_mat[r, c][0])
+			 if(img_mat[r, c][2] < 255 
+				 and img_mat[r, c][1] < 255 
+				 and img_mat[r, c][0] < 255):
+				 r_values.append(img_mat[r, c][2])
+				 g_values.append(img_mat[r, c][1])
+				 b_values.append(img_mat[r, c][0])
 	
 	num_pix = img_in.width * img_in.height
 
