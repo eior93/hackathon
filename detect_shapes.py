@@ -57,8 +57,8 @@ for c in range(0, img_width):
 		thresh_y_bin.append(1)
 	else:
 		thresh_y_bin.append(0)
-plt.plot(thresh_y)
-plt.show()
+# plt.plot(thresh_y)
+# plt.show()
 
 # increase above 5000 -> walk until below 5000, use middle as cut point
 x_cuts = []
@@ -88,6 +88,8 @@ top_row = 0
 bottom_row = img_height - 1
 num_vert_sections = 15
 
+band_ids = {}
+
 for i in range(0, len(x_cuts) - 1):
 	start_x = x_cuts[i]
 	end_x = x_cuts[i+1]
@@ -97,7 +99,32 @@ for i in range(0, len(x_cuts) - 1):
 	avg_color = avg_img_color_np(cropped_im)
 
 	min_dist_i = min_distance_index(avg_color)
+	band_ids[i] = (min_dist_i, start_x, end_x) #.put(i, (min_dist_i, start_x, end_x))
+	# band_ids.append(min_dist_i)
+	# print "Start_x:" + str(start_x) + "\t End_x:"+str(end_x)+ "\t" + color_names[min_dist_i]
 
+x_cuts_2 = []
+BGD = 10
+# Find cuts for from bgd to nbgd and nbgd to bgd
+for i in range(0, len(band_ids.keys()) - 1):
+		if band_ids[i][0] == BGD and band_ids[i+1][0] != BGD:
+			x_cuts_2.append(band_ids[i][2])
+		elif band_ids[i][0] != BGD and band_ids[i+1][0] == BGD:
+			x_cuts_2.append(band_ids[i+1][1])	
+
+band_ids_2 = {}
+
+for i in range(0, len(x_cuts_2) - 1):
+	start_x = x_cuts_2[i]
+	end_x = x_cuts_2[i+1]
+	cropped_im = np.array(img[top_row:bottom_row])
+	cropped_im = np.array([col[start_x:end_x] for col in cropped_im])
+
+	avg_color = avg_img_color_np(cropped_im)
+
+	min_dist_i = min_distance_index(avg_color)
+	band_ids_2[i] = (min_dist_i, start_x, end_x) #.put(i, (min_dist_i, start_x, end_x))
+	# band_ids.append(min_dist_i)
 	print "Start_x:" + str(start_x) + "\t End_x:"+str(end_x)+ "\t" + color_names[min_dist_i]
 
 # contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
