@@ -1,5 +1,6 @@
 import wx
-import im
+import cStringIO
+from image_to_color_bands import image_to_color_bands
 
 def TupleToColor(myTuple):
     return wx.Colour(myTuple[2], myTuple[1], myTuple[1])
@@ -16,6 +17,49 @@ bandColors = ["black", "black", "black"]
 def SetBandColor(number, color):
     bandColors[number] = color
     frame.UpdateBandColor(number, color)
+
+
+def ScaleBitmap(bitmap, width, height):
+    image = wx.ImageFromBitmap(bitmap)
+    image = image.Scale(width, height, wx.IMAGE_QUALITY_HIGH)
+    result = wx.BitmapFromImage(image)
+    return result
+
+
+class MyImgPanel(wx.Panel):
+    def __init__(self, parent):
+        # create the panel
+        wx.Panel.__init__(self, parent)
+
+
+    def SetImage(self, image):
+        try:
+            # pick a .jpg file you have in the working folder
+            imageFile = image
+            data = open(imageFile, "rb").read()
+            # convert to a data stream
+            stream = cStringIO.StringIO(data)
+            # convert to a bitmap
+            bmp = wx.BitmapFromImage( wx.ImageFromStream( stream ))
+
+            print self.GetSize()
+
+            width = self.GetSize()[0]
+            height = self.GetSize()[1]
+
+            bmp2 = ScaleBitmap(bmp, width, height)
+
+            print bmp2.GetSize()
+
+            # show the bitmap, (5, 5) are upper left corner coordinates
+            wx.StaticBitmap(self, -1, bmp2, (0, 0))
+            # alternate (simpler) way to load and display a jpg image from a file
+            # actually you can load .jpg .png .bmp or .gif files
+            # bitmap upper left corner is in the position tuple (x, y) = (5, 5)
+        except IOError:
+            print "Image file %s not found" % imageFile
+            raise SystemExit
+
 
 
 class Band(wx.Panel):
@@ -58,7 +102,10 @@ class MainWindow(wx.Frame):
 
         #  style=wx.SIMPLE_BORDER
 
-        self.imgPanel = wx.Panel(self)
+        self.imgPanel = MyImgPanel(self)
+        
+
+
         self.bandPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
         self.modPanel = wx.Panel(self)
         self.infoPanel = wx.Panel(self)
@@ -73,8 +120,9 @@ class MainWindow(wx.Frame):
 
         self.SetSizer(self.sizer)
         self.SetAutoLayout(True)
-        # self.sizer.Fit(self)
 
+        self.Show(True)
+        self.imgPanel.SetImage('inImage.jpg')
 
         self.bandArr = []
         self.bandModArr = []
@@ -133,6 +181,8 @@ class MainWindow(wx.Frame):
         self.Show(True)
 
     def UpdateBandColor(self, number, color):
+        print 'number', number
+        print 'color', color
         self.bandArr[number].SetColor(colorDict[color])
 
     def OnAbout(self, event):
@@ -142,6 +192,13 @@ class MainWindow(wx.Frame):
         dlg.Destroy() # finally destroy it when finished. 
 
     def OnClick(self, event):
+        color_ids = image_to_color_bands('inImage');
+        self.imgPanel.SetImage('inImage_cropped.jpg')
+
+        SetBandColor(0, colorNames[color_ids[0]])
+        SetBandColor(1, colorNames[color_ids[1]])
+        SetBandColor(2, colorNames[color_ids[2]])
+
         answer = (colorNames.index(bandColors[0])*10 + colorNames.index(bandColors[1])) * pow(10,colorNames.index(bandColors[2]))
         self.resistance.SetLabel("Resistance: " + str(answer))
 
