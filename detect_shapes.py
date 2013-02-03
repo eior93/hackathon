@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import Image, cv
 import matplotlib.pyplot as plt
-from smooth import smooth
+# from smooth import smooth
 import math
 from color_classification import avg_img_color_np, min_distance_index
 from colors import color_names
@@ -106,19 +106,26 @@ def band_ids_second_pass(band_ids, img_height, img):
 
 def cropped_img_to_colors(f):
 	# Read in image
+	print f
 	img = cv2.imread(f)
+	print type(img)
 	# Sharpen the image (unsharpen mask)
 	blur = cv2.blur(img, (7,1))
-	cv2.addWeighted(img, 1.5, blur, -0.5, 0, blur)
+	# cv2.addWeighted(img, 1.5, blur, -0.5, 0, blur)
 
 	# Convert to grayscale
 	gray = cv2.cvtColor(blur, cv2.COLOR_RGB2GRAY)
 	img_width = len(img[0])
 	img_height = len(img)
 
-	thresh = cv2.Canny(gray, 30, 75)
-	thresh_y_bin = sum_y_and_thresh(thresh, img_width, img_height)
-	x_cuts = cuts_cross_threshold(thresh_y_bin, img_width)
+	# thresh = cv2.Canny(gray, 30, 75)
+	# thresh_y_bin = sum_y_and_thresh(thresh, img_width, img_height)
+	# x_cuts = cuts_cross_threshold(thresh_y_bin, img_width)
+
+	num_cuts = 60
+	x_cuts = []
+	for i in range(0, num_cuts):
+		x_cuts.append(math.floor(i * img_width / num_cuts ))
 
 	band_ids = band_ids_first_pass(x_cuts, img_height, img)
 	band_ids_2 = band_ids_second_pass(band_ids, img_height, img)
@@ -129,15 +136,19 @@ def cropped_img_to_colors(f):
 		if band_ids_2[i][0] != BGD:
 			colors.append(band_ids_2[i][0])
 
+	print len(colors)
 	# Handle if you don't find the correct number of bands
 	if len(colors) > 3:
-		return colors[0:2]
+		return colors[0:3]
 	elif len(colors) == 3:
 		return colors
 	elif len(colors) == 2:
-		return colors.append(colors[1])
+		colors.append(colors[1])
+		return colors
 	elif len(colors) == 1:
-		return colors.append(colors[0]).append(colors[0])
+		colors.append(colors[0])
+		colors.append(colors[0])
+		return colors
 	else:
 		return [0, 0, 0]
 
