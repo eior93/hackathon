@@ -53,7 +53,7 @@ for c in range(0, img_width):
 		# print str(r) + " " + str(c)
 		sum_col += thresh[r, c]
 	thresh_y.append(sum_col)
-	if sum_col > 3000:
+	if sum_col > 4000:
 		thresh_y_bin.append(1)
 	else:
 		thresh_y_bin.append(0)
@@ -70,7 +70,8 @@ for c in range(1, img_width):
 	# if tracing_ones and thresh_y_bin[c] == 1:
 		# do nothing
 	if tracing_ones and thresh_y_bin[c] == 0:
-		x_cuts.append(math.floor((start_x + c)/2))
+		x_cuts.append(start_x) #math.floor((start_x + c)/2))
+		x_cuts.append(c)
 		start_x = c + 1
 		tracing_ones = False 
 	elif not(tracing_ones) and thresh_y_bin[c] == 1:
