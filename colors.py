@@ -35,9 +35,10 @@ BLUE	=	(27.0, 43.5, 70.5)
 PURPLE	=	(60.5, 41.0, 76.0)
 GREY	=	(69.5, 77.0, 90.5)
 WHITE	=	(130.5, 129.0, 130.5)
+BGD 	=   (101.2, 88.2, 77.0)
 
-colors = [BLACK, BROWN, RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, GREY, WHITE];
+colors = [BLACK, BROWN, RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, GREY, WHITE, BGD];
 
 color_names = ["black", "brown", "red", "orange", "yellow", "green", "blue", "purple", 
-	"grey", "white"];
+	"grey", "white", "bgd"];
 
