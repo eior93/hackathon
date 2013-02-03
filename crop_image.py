@@ -3,6 +3,16 @@ import cv2
 import math
 #import matplotlib.pyplot as plt
 
+def helper_get_nonwhite(column):
+        
+        sumPix = 0
+        
+        for pix in column:
+                #print pix
+                if pix[0] != 255 and pix[1] != 255 and pix[2] != 255:
+                        sumPix += 1
+        return sumPix
+
 def crop_image_2(image_name):
         imgray = cv2.imread(image_name+'.jpg', cv2.CV_LOAD_IMAGE_GRAYSCALE)
         im = cv2.imread(image_name+'.jpg')
@@ -130,66 +140,72 @@ def crop_image(image_name):
 ##        print min_y_index
 
 
-        col_offset = 100
+        col_offset = 0
         #column means
-        col_means = []
+        col_counts = []
         for i in range(col_offset,len(im[0])-col_offset):
-                col_means.append(np.mean([col[i] for col in cropped_im]))
+                col_counts.append(helper_get_nonwhite([row[i] for row in cropped_im]))
+                #col_means.append(np.mean([row[i] for row in cropped_im]))
         #print np.median(col_means)
         #print np.var(col_means)
         #print np.mean(col_means)
-        minMean =  np.min(col_means)
-        maxMean =  np.max(col_means)
+
+
+        minMean =  np.min(col_counts)
+        maxMean =  np.max(col_counts)
         #col_threshold = (minMean + maxMean)/2
-        col_threshold = minMean + 3.56*np.std(col_means)
+        col_threshold = minMean + np.std(col_counts)
 
         print minMean
         print maxMean
-        print np.std(col_means)
+        print np.std(col_counts)
+        print col_counts
+        print col_threshold
         #print col_means
         #print col_means
         #print col_threshold
 
         left_col = -1
         right_col = -1
-        for i in range(len(col_means)):
-                if col_means[i]<col_threshold:
+        for i in range(5, len(col_counts)):
+                if col_counts[i]>col_threshold:
                         left_col = i + 10
                         break
-        for i in reversed(range(len(col_means))):
-                if col_means[i]<col_threshold:
+        for i in reversed(range(len(col_counts)-5)):
+                if col_counts[i]>col_threshold:
                         right_col = i - 10
                         break
-        #print left_col
-        #print right_col
+        print left_col
+        print right_col
 
+        
         cropped_im = np.array([col[left_col:right_col] for col in cropped_im])
 
 
-##
-##        # crop by row again except by median
-##        row_medians = []
-##        for i in range(len(cropped_im)):
-##                row_medians.append(np.median(cropped_im[i]))
-##
-##        top_row = -1
-##        threshold = 250
-##        # assume that top of resistor is at least 10 pixels in
-##        for i in range(0, len(cropped_im)):
-##                # if row variance is high enough, remember
-##                if row_medians[i] < threshold:
-##                        top_row = i
-##                        break
-##        bottom_row = -1
-##        # same assumption here with bottom
-##        for i in reversed(range(len(cropped_im))):
-##                if row_medians[i] < threshold:
-##                        bottom_row = i
-##                        break
-##
-##        #print top_row
-##        #print bottom_row
-##        cropped_im = np.array(cropped_im[top_row:bottom_row])
+
+        # crop by row again except by median
+        row_medians = []
+        for i in range(len(cropped_im)):
+                row_medians.append(np.median(cropped_im[i]))
+
+        top_row = -1
+        threshold = 250
+        # assume that top of resistor is at least 10 pixels in
+        for i in range(0, len(cropped_im)):
+                # if row variance is high enough, remember
+                if row_medians[i] < threshold:
+                        top_row = i
+                        break
+        bottom_row = -1
+        # same assumption here with bottom
+        for i in reversed(range(len(cropped_im))):
+                if row_medians[i] < threshold:
+                        bottom_row = i
+                        break
+
+        #print top_row
+        #print bottom_row
+        cropped_im = np.array(cropped_im[top_row:bottom_row])
 
         cv2.imwrite(image_name+'_cropped.jpg', cropped_im)
 
