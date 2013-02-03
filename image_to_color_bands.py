@@ -12,7 +12,7 @@ def image_to_color_bands(image_name):
 	color_ids = cropped_img_to_colors(cropped_filename)
 	return color_ids
 
-print image_to_color_bands("pic")
+print image_to_color_bands("picture0")
 
 # print image_to_color_bands("cropped_images/IMAG1025")
 # print image_to_color_bands("cropped_images/IMAG1026")
