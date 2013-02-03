@@ -2,21 +2,24 @@
 
 import cv
 import math
+import os
+import fnmatch
 
+BLACK = (10, 10, 10);
+BROWN = (88, 60, 50);
 RED = (231, 47, 39);
 ORANGE = (238, 113, 25);
 YELLOW = (255, 228, 15);
 GREEN = (23, 106, 43);
 BLUE = (46, 20, 141);
 PURPLE = (115, 71, 79);
-BROWN = (88, 60, 50);
-BLACK = (10, 10, 10);
+GREY = (0, 0, 0); # TODO add color values here
 WHITE = (244, 244, 244);
 
-colors = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, BROWN, BLACK, WHITE];
+colors = [BLACK, BROWN, RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, GREY, WHITE];
 
-color_names = ["red", "orange", "yellow", "green", "blue", "purple", 
-	"brown", "black", "white"];
+color_names = ["black", "brown", "red", "orange", "yellow", "green", "blue", "purple", 
+	"grey", "white"];
 
 # Distance formula between two colors
 def distance(a, b):
@@ -60,11 +63,13 @@ def avg_img_color(img_in):
 	return (avg_r, avg_g, avg_b)
 
 # Get average color sample values for knowing RGB values for colors
-color_sample_filenames = [["color_samples/red.jpg"],
-	["color_samples/orange.jpg", "color_samples/orange1.jpg"]]
+color_sample_dir = "color_samples"
+os.chdir(color_sample_dir)
 
-for color_i in range(0, len(color_sample_filenames)):
-	this_sample_filenames = color_sample_filenames[color_i]
+for color_i in range(0, len(color_names)):
+	print color_names[color_i]
+	this_sample_filenames = fnmatch.filter(os.listdir('.'), color_names[color_i]+'*.jpg');
+	print this_sample_filenames
 	num_samples = len(this_sample_filenames)
 	color_tuples = []
 	for sample_i in range(0, num_samples):
